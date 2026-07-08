@@ -1017,7 +1017,16 @@ impl Parse {
             }
         };
 
-        let (struct_, impl_) = bitflags.expand();
+        let out_of_line_transparent = {
+            let mut transparent = false;
+            let bitflag_ident = bitflags.self_ty_name().unraw().to_string();
+            self.structs.for_items(&Path::new(&bitflag_ident), |s| {
+                transparent |= s.is_transparent;
+            });
+            transparent
+        };
+
+        let (struct_, impl_) = bitflags.expand(out_of_line_transparent);
         if let Some(struct_) = struct_ {
             self.load_syn_struct(config, crate_name, mod_cfg, &struct_);
         }
