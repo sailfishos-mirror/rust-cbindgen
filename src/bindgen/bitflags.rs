@@ -4,6 +4,7 @@
 
 use proc_macro2::TokenStream;
 use std::collections::HashSet;
+use syn::ext::IdentExt;
 use syn::fold::Fold;
 use syn::parse::{Parse, ParseStream, Parser, Result as ParseResult};
 
@@ -245,7 +246,7 @@ impl Parse for Flag {
         Ok(Self {
             attrs: input.call(syn::Attribute::parse_outer)?,
             const_token: input.parse()?,
-            name: input.parse()?,
+            name: input.call(syn::Ident::parse_any)?,
             equals_token: input.parse()?,
             value: input.parse()?,
             semicolon_token: input.parse()?,
@@ -262,7 +263,12 @@ impl Parse for Flags {
         let _ = braced!(content in input);
         let mut flags = vec![];
         while !content.is_empty() {
-            flags.push(content.parse()?);
+            let flag: Flag = content.parse()?;
+            if flag.name == "_" {
+                debug!("Continuing past unnamed bitflag");
+                continue;
+            }
+            flags.push(flag);
         }
         Ok(Flags(flags))
     }
