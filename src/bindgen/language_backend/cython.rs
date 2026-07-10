@@ -268,7 +268,7 @@ impl LanguageBackend for CythonLanguageBackend<'_> {
         write!(
             out,
             "{}struct {}",
-            &self.config.style.cython_def(),
+            self.config.style.cython_def(),
             o.export_name()
         );
         out.open_brace();
@@ -284,7 +284,7 @@ impl LanguageBackend for CythonLanguageBackend<'_> {
 
         self.write_documentation(out, &t.documentation);
 
-        write!(out, "{} ", &self.config.language.typedef());
+        write!(out, "{} ", self.config.language.typedef());
 
         self.write_field(
             out,

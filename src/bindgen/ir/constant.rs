@@ -247,7 +247,7 @@ impl Literal {
             }
             Literal::FieldAccess { ref base, .. } => base.visit(visitor),
             Literal::Struct { ref fields, .. } => {
-                for (_name, field) in fields.iter() {
+                for field in fields.values() {
                     if !field.value.visit(visitor) {
                         return false;
                     }
